@@ -227,11 +227,11 @@ parseStatement: true, parseSourceElement: true */
     }
 
 
-    // 7.2 White Space
     /**
      * 是否为空白字符
      * @param  {String}  ch 待判断的字符
-     * @return {Boolean}    
+     * @return {Boolean} 
+     * @see 7.2 White Space
      */
     function isWhiteSpace(ch) {
         return (ch === 32) ||  // space
@@ -262,8 +262,12 @@ parseStatement: true, parseSourceElement: true */
         return (ch === 10) || (ch === 13) || (ch === 0x2028) || (ch === 0x2029);
     }
 
-    // 7.6 Identifier Names and Identifiers
-
+    /**
+     * 是否是标识符开始字符
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}  
+     * @see 7.6 Identifier Names and Identifiers  
+     */
     function isIdentifierStart(ch) {
         return (ch === 36) || (ch === 95) ||  // $ (dollar) and _ (underscore)
             (ch >= 65 && ch <= 90) ||         // A..Z
@@ -272,6 +276,11 @@ parseStatement: true, parseSourceElement: true */
             ((ch >= 0x80) && Regex.NonAsciiIdentifierStart.test(String.fromCharCode(ch)));
     }
 
+    /**
+     * 是否是标识符其他部分的字符
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}    
+     */
     function isIdentifierPart(ch) {
         return (ch === 36) || (ch === 95) ||  // $ (dollar) and _ (underscore)
             (ch >= 65 && ch <= 90) ||         // A..Z
@@ -281,8 +290,12 @@ parseStatement: true, parseSourceElement: true */
             ((ch >= 0x80) && Regex.NonAsciiIdentifierPart.test(String.fromCharCode(ch)));
     }
 
-    // 7.6.1.2 Future Reserved Words
-
+    /**
+     * 是否是未来将用到的保留字
+     * @param  {String}  id 待判断的字符串
+     * @return {Boolean}   
+     * @see 7.6.1.2 Future Reserved Words 
+     */
     function isFutureReservedWord(id) {
         switch (id) {
         case 'class':
@@ -297,6 +310,11 @@ parseStatement: true, parseSourceElement: true */
         }
     }
 
+    /**
+     * 是否是严格模式下的保留字
+     * @param  {String}  id 待判断的字符串
+     * @return {Boolean}    
+     */
     function isStrictModeReservedWord(id) {
         switch (id) {
         case 'implements':
@@ -314,12 +332,23 @@ parseStatement: true, parseSourceElement: true */
         }
     }
 
+    /**
+     * 是否是受限制的关键字
+     * 例如，严格模式下，eval和arguments不能被作为变量名
+     * @param  {String}  id 待判断的字符串
+     * @return {Boolean}    
+     */
     function isRestrictedWord(id) {
         return id === 'eval' || id === 'arguments';
     }
 
-    // 7.6.1.1 Keywords
 
+    /**
+     * 是否是关键字
+     * @param  {String}  id 待判断的字符串
+     * @return {Boolean}
+     * @see 7.6.1.1 Keywords  
+     */
     function isKeyword(id) {
         if (strict && isStrictModeReservedWord(id)) {
             return true;
@@ -358,6 +387,9 @@ parseStatement: true, parseSourceElement: true */
 
     // 7.4 Comments
 
+    /**
+     * 跳过注释
+     */
     function skipComment() {
         var ch, blockComment, lineComment;
 
@@ -371,6 +403,7 @@ parseStatement: true, parseSourceElement: true */
                 ++index;
                 if (isLineTerminator(ch)) {
                     lineComment = false;
+                    //\n (char #13), \r (char #10)
                     if (ch === 13 && source.charCodeAt(index) === 10) {
                         ++index;
                     }
@@ -433,6 +466,11 @@ parseStatement: true, parseSourceElement: true */
         }
     }
 
+    /**
+     * 扫描十六进制转义字符
+     * @param  {String} prefix 前缀，'u' || 'x'
+     * @return {String}        转义后的字符真实值
+     */
     function scanHexEscape(prefix) {
         var i, len, ch, code = 0;
 
