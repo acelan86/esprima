@@ -144,6 +144,7 @@ parseStatement: true, parseSourceElement: true */
     };
 
     // Error messages should be identical to V8.
+    // V8中定义的错误信息
     Messages = {
         UnexpectedToken:  'Unexpected token %0',
         UnexpectedNumber:  'Unexpected number',
@@ -197,21 +198,41 @@ parseStatement: true, parseSourceElement: true */
         }
     }
 
+
+    /**
+     * 是否为数字[0-9]
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}    
+     */
     function isDecimalDigit(ch) {
         return (ch >= 48 && ch <= 57);   // 0..9
     }
 
+    /**
+     * 是否为16进制字符[0-9a-zA-Z]
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}    
+     */
     function isHexDigit(ch) {
         return '0123456789abcdefABCDEF'.indexOf(ch) >= 0;
     }
 
+    /**
+     * 是否为八进制数字[0-7]
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}    
+     */
     function isOctalDigit(ch) {
         return '01234567'.indexOf(ch) >= 0;
     }
 
 
     // 7.2 White Space
-
+    /**
+     * 是否为空白字符
+     * @param  {String}  ch 待判断的字符
+     * @return {Boolean}    
+     */
     function isWhiteSpace(ch) {
         return (ch === 32) ||  // space
             (ch === 9) ||      // tab
@@ -221,8 +242,22 @@ parseStatement: true, parseSourceElement: true */
             (ch >= 0x1680 && '\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\uFEFF'.indexOf(String.fromCharCode(ch)) > 0);
     }
 
-    // 7.3 Line Terminators
-
+    /**
+     * 是否为行终结符
+     * Terminators
+     * @return {Boolean}
+     * @see 7.3 Line Terminators
+     *      The ECMAScript line terminator characters are listed in Table 3.
+     *          Table 3 — Line Terminator Characters
+     *      ---------------------------------------------------------------------
+     *      |    Code Unit Value      |   Name                |   Formal Name   |
+     *      ---------------------------------------------------------------------
+     *      |       \u000A            |    Line Feed          |      <LF>       |
+     *      |       \u000D            |  Carriage Return      |      <CR>       |
+     *      |       \u2028            |  Line separator       |      <LS>       |
+     *      |       \u2029            |  Paragraph separator  |      <PS>       |
+     *      ---------------------------------------------------------------------
+     */
     function isLineTerminator(ch) {
         return (ch === 10) || (ch === 13) || (ch === 0x2028) || (ch === 0x2029);
     }
