@@ -71,16 +71,17 @@ parseStatement: true, parseSourceElement: true */
         extra;
 
     Token = {
-        BooleanLiteral: 1,
-        EOF: 2,
-        Identifier: 3,
-        Keyword: 4,
-        NullLiteral: 5,
-        NumericLiteral: 6,
-        Punctuator: 7,
-        StringLiteral: 8
+        BooleanLiteral: 1,  //布尔值字面量
+        EOF: 2,             //文件结束符
+        Identifier: 3,      //标识符
+        Keyword: 4,         //关键字
+        NullLiteral: 5,     //空字面量
+        NumericLiteral: 6,  //数字字面量
+        Punctuator: 7,      //标点符号
+        StringLiteral: 8    //字符串字面量
     };
 
+    //Token值对应名字的映射表
     TokenName = {};
     TokenName[Token.BooleanLiteral] = 'Boolean';
     TokenName[Token.EOF] = '<end>';
@@ -91,53 +92,55 @@ parseStatement: true, parseSourceElement: true */
     TokenName[Token.Punctuator] = 'Punctuator';
     TokenName[Token.StringLiteral] = 'String';
 
+    //语法表
     Syntax = {
-        AssignmentExpression: 'AssignmentExpression',
-        ArrayExpression: 'ArrayExpression',
-        BlockStatement: 'BlockStatement',
-        BinaryExpression: 'BinaryExpression',
-        BreakStatement: 'BreakStatement',
-        CallExpression: 'CallExpression',
-        CatchClause: 'CatchClause',
-        ConditionalExpression: 'ConditionalExpression',
-        ContinueStatement: 'ContinueStatement',
-        DoWhileStatement: 'DoWhileStatement',
-        DebuggerStatement: 'DebuggerStatement',
-        EmptyStatement: 'EmptyStatement',
-        ExpressionStatement: 'ExpressionStatement',
-        ForStatement: 'ForStatement',
-        ForInStatement: 'ForInStatement',
-        FunctionDeclaration: 'FunctionDeclaration',
-        FunctionExpression: 'FunctionExpression',
-        Identifier: 'Identifier',
-        IfStatement: 'IfStatement',
-        Literal: 'Literal',
-        LabeledStatement: 'LabeledStatement',
-        LogicalExpression: 'LogicalExpression',
-        MemberExpression: 'MemberExpression',
-        NewExpression: 'NewExpression',
-        ObjectExpression: 'ObjectExpression',
-        Program: 'Program',
-        Property: 'Property',
-        ReturnStatement: 'ReturnStatement',
-        SequenceExpression: 'SequenceExpression',
-        SwitchStatement: 'SwitchStatement',
-        SwitchCase: 'SwitchCase',
-        ThisExpression: 'ThisExpression',
-        ThrowStatement: 'ThrowStatement',
-        TryStatement: 'TryStatement',
-        UnaryExpression: 'UnaryExpression',
-        UpdateExpression: 'UpdateExpression',
-        VariableDeclaration: 'VariableDeclaration',
-        VariableDeclarator: 'VariableDeclarator',
-        WhileStatement: 'WhileStatement',
-        WithStatement: 'WithStatement'
+        AssignmentExpression: 'AssignmentExpression',       //赋值表达式
+        ArrayExpression: 'ArrayExpression',                 //数组表达式
+        BlockStatement: 'BlockStatement',                   //块
+        BinaryExpression: 'BinaryExpression',               //二元表达式
+        BreakStatement: 'BreakStatement',                   //break语句
+        CallExpression: 'CallExpression',                   //函数调用表达式
+        CatchClause: 'CatchClause',                         //catch分支
+        ConditionalExpression: 'ConditionalExpression',     //条件表达式
+        ContinueStatement: 'ContinueStatement',             //continue语句
+        DoWhileStatement: 'DoWhileStatement',               //do...while语句
+        DebuggerStatement: 'DebuggerStatement',             //debugger语句
+        EmptyStatement: 'EmptyStatement',                   //空语句
+        ExpressionStatement: 'ExpressionStatement',         //表达式语句
+        ForStatement: 'ForStatement',                       //for语句
+        ForInStatement: 'ForInStatement',                   //for...in语句
+        FunctionDeclaration: 'FunctionDeclaration',         //函数声明
+        FunctionExpression: 'FunctionExpression',           //函数表达式
+        Identifier: 'Identifier',                           //标识符
+        IfStatement: 'IfStatement',                         //if语句      
+        Literal: 'Literal',                                 //字面量
+        LabeledStatement: 'LabeledStatement',               //标签语句
+        LogicalExpression: 'LogicalExpression',             //逻辑表达式
+        MemberExpression: 'MemberExpression',               //成员表达式
+        NewExpression: 'NewExpression',                     //new表达式
+        ObjectExpression: 'ObjectExpression',               //对象表达式
+        Program: 'Program',                                 //程序
+        Property: 'Property',                               //属性
+        ReturnStatement: 'ReturnStatement',                 //return语句
+        SequenceExpression: 'SequenceExpression',           //序列表达式, 例如参数列表 arg1, arg2, ... argN
+        SwitchStatement: 'SwitchStatement',                 //switch语句
+        SwitchCase: 'SwitchCase',                           //case语句
+        ThisExpression: 'ThisExpression',                   //this表达式
+        ThrowStatement: 'ThrowStatement',                   //throw语句
+        TryStatement: 'TryStatement',                       //try语句
+        UnaryExpression: 'UnaryExpression',                 //一元表达式
+        UpdateExpression: 'UpdateExpression',               //更新表达式，自增，自减
+        VariableDeclaration: 'VariableDeclaration',         //变量声明，例如var a;
+        VariableDeclarator: 'VariableDeclarator',           //变量声明符，例如var
+        WhileStatement: 'WhileStatement',                   //while语句
+        WithStatement: 'WithStatement'                      //with语句
     };
 
+    //属性标识符类型
     PropertyKind = {
-        Data: 1,
-        Get: 2,
-        Set: 4
+        Data: 1,        //数据
+        Get: 2,         //getter
+        Set: 4          //setter
     };
 
     // Error messages should be identical to V8.
@@ -1096,7 +1099,7 @@ parseStatement: true, parseSourceElement: true */
 
     SyntaxTreeDelegate = {
 
-        name: 'SyntaxTree',
+        name: 'SyntaxTree', //语法树
 
         createArrayExpression: function (elements) {
             return {
@@ -1113,6 +1116,7 @@ parseStatement: true, parseSourceElement: true */
                 right: right
             };
         },
+
 
         createBinaryExpression: function (operator, left, right) {
             var type = (operator === '||' || operator === '&&') ? Syntax.LogicalExpression :
