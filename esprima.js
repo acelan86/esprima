@@ -486,6 +486,10 @@ parseStatement: true, parseSourceElement: true */
         return String.fromCharCode(code);
     }
 
+    /**
+     * 从当前游标所在字符开始，获取转义后的标识符
+     * @return {String} 转义后的标识符
+     */
     function getEscapedIdentifier() {
         var ch, id;
 
@@ -531,6 +535,11 @@ parseStatement: true, parseSourceElement: true */
         return id;
     }
 
+
+    /**
+     * 从当前游标所在字符开始，获取标识符
+     * @return {String} 取得的标识符
+     */
     function getIdentifier() {
         var start, ch;
 
@@ -552,12 +561,16 @@ parseStatement: true, parseSourceElement: true */
         return source.slice(start, index);
     }
 
+    /**
+     * 从当前游标开始，扫描标识符
+     * @return {Object} 标识符语法节点
+     */
     function scanIdentifier() {
         var start, id, type;
 
         start = index;
 
-        // Backslash (char #92) starts an escaped character.
+        // '\' (char #92) starts an escaped character.
         id = (source.charCodeAt(index) === 92) ? getEscapedIdentifier() : getIdentifier();
 
         // There is no keyword or literal with only one character.
@@ -585,7 +598,10 @@ parseStatement: true, parseSourceElement: true */
 
 
     // 7.7 Punctuators
-
+    /**
+     * 标点符号
+     * @return {[type]} [description]
+     */
     function scanPunctuator() {
         var start = index,
             code = source.charCodeAt(index),
@@ -648,7 +664,7 @@ parseStatement: true, parseSourceElement: true */
                 case 61: // =
                     index += 2;
 
-                    // !== and ===
+                    // !== and === '=' (char #61)
                     if (source.charCodeAt(index) === 61) {
                         ++index;
                     }
@@ -749,8 +765,11 @@ parseStatement: true, parseSourceElement: true */
         throwError({}, Messages.UnexpectedToken, 'ILLEGAL');
     }
 
-    // 7.8.3 Numeric Literals
-
+    /**
+     * 从当前游标位置，扫描数字字面量
+     * @return {Object} 数字字面量类型的语法节点
+     * @see  7.8.3 Numeric Literals
+     */
     function scanNumericLiteral() {
         var number, start, ch;
 
@@ -891,7 +910,10 @@ parseStatement: true, parseSourceElement: true */
     }
 
     // 7.8.4 String Literals
-
+    /**
+     * 从当前游标位置扫描字符串字面量
+     * @return {Object} 字符串字面量类型的语法节点
+     */
     function scanStringLiteral() {
         var str = '', quote, start, ch, code, unescaped, restore, octal = false;
 
@@ -1088,6 +1110,11 @@ parseStatement: true, parseSourceElement: true */
         };
     }
 
+    /**
+     * 是否是一个标识符名字
+     * @param  {Object}  token 要判断的语法节点
+     * @return {Boolean}       
+     */
     function isIdentifierName(token) {
         return token.type === Token.Identifier ||
             token.type === Token.Keyword ||
@@ -1095,6 +1122,11 @@ parseStatement: true, parseSourceElement: true */
             token.type === Token.NullLiteral;
     }
 
+
+    /**
+     * [advance description]
+     * @return {[type]} [description]
+     */
     function advance() {
         var ch;
 
@@ -1109,6 +1141,7 @@ parseStatement: true, parseSourceElement: true */
             };
         }
 
+        //找出当前游标所在的字符
         ch = source.charCodeAt(index);
 
         // Very common: ( and ) and ;
@@ -1141,6 +1174,10 @@ parseStatement: true, parseSourceElement: true */
         return scanPunctuator();
     }
 
+    /**
+     * 词法
+     * @return {[type]} [description]
+     */
     function lex() {
         var token;
 
@@ -1158,6 +1195,10 @@ parseStatement: true, parseSourceElement: true */
         return token;
     }
 
+    /**
+     * 查找
+     * @return {[type]} [description]
+     */
     function peek() {
         var pos, line, start;
 
@@ -1170,6 +1211,10 @@ parseStatement: true, parseSourceElement: true */
         lineStart = start;
     }
 
+    /**
+     * 语法树代理
+     * @type {Object}
+     */
     SyntaxTreeDelegate = {
 
         name: 'SyntaxTree', //语法树
@@ -1616,19 +1661,30 @@ parseStatement: true, parseSourceElement: true */
     }
 
     // Return true if the next token matches the specified punctuator.
-
+    /**
+     * 下一个语法节点是否匹配某个标点
+     * @param  {String} valule 要匹配的特定标点
+     * @return {Boolean}        
+     */
     function match(value) {
         return lookahead.type === Token.Punctuator && lookahead.value === value;
     }
 
     // Return true if the next token matches the specified keyword
-
+    /**
+     * 下一个语法节点是否匹配某个关键字
+     * @param  {String} keyword 要匹配的特定关键字
+     * @return {Boolean}        
+     */
     function matchKeyword(keyword) {
         return lookahead.type === Token.Keyword && lookahead.value === keyword;
     }
 
     // Return true if the next token is an assignment operator
-
+    /**
+     * 下一个语法节点是否匹配赋值操作符
+     * @return {Boolean}        
+     */
     function matchAssign() {
         var op;
 
@@ -1650,10 +1706,13 @@ parseStatement: true, parseSourceElement: true */
             op === '|=';
     }
 
+    /**
+     * 吃掉分号
+     */
     function consumeSemicolon() {
         var line;
 
-        // Catch the very common case first: immediately a semicolon (char #59).
+        // Catch the very common case first: immediately a semicolon ';'(char #59).
         if (source.charCodeAt(index) === 59) {
             lex();
             return;
@@ -1676,13 +1735,17 @@ parseStatement: true, parseSourceElement: true */
     }
 
     // Return true if provided expression is LeftHandSideExpression
-
+    /**
+     * 提供的表达式是否可以作为左侧表达式
+     */
     function isLeftHandSide(expr) {
         return expr.type === Syntax.Identifier || expr.type === Syntax.MemberExpression;
     }
 
     // 11.1.4 Array Initialiser
-
+    /**
+     * 解析数组初始化
+     */
     function parseArrayInitialiser() {
         var elements = [];
 
@@ -1707,7 +1770,12 @@ parseStatement: true, parseSourceElement: true */
     }
 
     // 11.1.5 Object Initialiser
-
+    /**
+     * 解析
+     * @param  {[type]} param [description]
+     * @param  {[type]} first [description]
+     * @return {[type]}       [description]
+     */
     function parsePropertyFunction(param, first) {
         var previousStrict, body;
 
