@@ -537,20 +537,24 @@ parseStatement: true, parseSourceElement: true */
 
 
     /**
-     * 从当前游标所在字符开始，获取标识符
-     * @return {String} 取得的标识符
+     * 从当前游标所在字符开始，获取一个标识符字符串
+     * @return {String} 取得的标识符字符串
      */
     function getIdentifier() {
         var start, ch;
 
         start = index++;
+        /*
+         * 循环顺序读取每一个字符，直到源代码被读取完毕，或者某个字符不属于标识符的组成字符后退出循环，
+         */
         while (index < length) {
             ch = source.charCodeAt(index);
+            //如果是unicode编码过的（判断是否为'\' (char #92)），则按照unicode方式来获取标识符字符串
             if (ch === 92) {
-                // Blackslash (char #92) marks Unicode escape sequence.
                 index = start;
                 return getEscapedIdentifier();
             }
+            //否则
             if (isIdentifierPart(ch)) {
                 ++index;
             } else {
@@ -558,12 +562,15 @@ parseStatement: true, parseSourceElement: true */
             }
         }
 
+        /*
+            截取并返回读取到的这个标识符字符串
+         */
         return source.slice(start, index);
     }
 
     /**
      * 从当前游标开始，扫描标识符
-     * @return {Object} 标识符语法节点
+     * @return {Object} 标识符token
      */
     function scanIdentifier() {
         var start, id, type;
@@ -575,18 +582,24 @@ parseStatement: true, parseSourceElement: true */
 
         // There is no keyword or literal with only one character.
         // Thus, it must be an identifier.
+        // 因为没有关键字或者字面量是一个字符的，所以一个字符的标识符名字一定是一个标识符类型
         if (id.length === 1) {
             type = Token.Identifier;
         } else if (isKeyword(id)) {
+            //标识符字符串是一个关键字
             type = Token.Keyword;
         } else if (id === 'null') {
+            //标识符字符串是null字面量
             type = Token.NullLiteral;
         } else if (id === 'true' || id === 'false') {
+            //标识符字符串是bool字面量
             type = Token.BooleanLiteral;
         } else {
+            //标识符类型
             type = Token.Identifier;
         }
 
+        //返回这个token
         return {
             type: type,
             value: id,
@@ -3237,9 +3250,14 @@ parseStatement: true, parseSourceElement: true */
         return sourceElements;
     }
 
+    /**
+     * 解析程序
+     * @return {Object} 程序语法节点
+     */
     function parseProgram() {
         var body;
         strict = false;
+        //预读一个token
         peek();
         body = parseSourceElements();
         return delegate.createProgram(body);
@@ -3851,6 +3869,12 @@ parseStatement: true, parseSourceElement: true */
         }
     }
 
+    /**
+     * 解析代码入口，esprima.parse
+     * @param  {String} code    字符串形式的源代码
+     * @param  {Object} options 配置项
+     * @return {Object}         语法树
+     */
     function parse(code, options) {
         var program, toString;
 
@@ -3903,6 +3927,7 @@ parseStatement: true, parseSourceElement: true */
 
         patch();
         try {
+            //第一层，Program的解析
             program = parseProgram();
             if (typeof extra.comments !== 'undefined') {
                 filterCommentLocation();
